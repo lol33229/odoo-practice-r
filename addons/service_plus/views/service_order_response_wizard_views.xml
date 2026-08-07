@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_service_order_response_wizard_form" model="ir.ui.view">
+        <field name="name">service.order.response.wizard.form</field>
+        <field name="model">service.order.response.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Откликнуться на заказ">
+                <group>
+                    <field name="order_id" readonly="1"/>
+                    <field name="provider_id"/>
+                    <field name="proposed_price"/>
+                    <field name="message" placeholder="Например: могу приехать сегодня после 15:00"/>
+                </group>
+                <footer>
+                    <button name="action_submit" type="object"
+                            string="Отправить отклик" class="btn-primary"/>
+                    <button string="Отмена" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_service_category_user,service.category.user,model_service_category,base.group_user,1,1,1,1
+access_service_site_user,service.site.user,model_service_site,base.group_user,1,1,1,1
+access_service_provider_user,service.provider.user,model_service_provider,base.group_user,1,1,1,1
+access_service_review_user,service.review.user,model_service_review,base.group_user,1,1,1,1
+access_service_order_user,service.order.user,model_service_order,base.group_user,1,1,1,1
+access_service_order_photo_user,service.order.photo.user,model_service_order_photo,base.group_user,1,1,1,1
+access_service_order_response_user,service.order.response.user,model_service_order_response,base.group_user,1,1,1,1
+access_service_order_response_wizard_user,service.order.response.wizard.user,model_service_order_response_wizard,base.group_user,1,1,1,1

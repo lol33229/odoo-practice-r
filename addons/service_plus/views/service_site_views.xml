@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_service_site_list" model="ir.ui.view">
+        <field name="name">service.site.list</field>
+        <field name="model">service.site</field>
+        <field name="arch" type="xml">
+            <list string="Объекты сети">
+                <field name="name"/>
+                <field name="city"/>
+                <field name="address"/>
+                <field name="order_count"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_service_site_form" model="ir.ui.view">
+        <field name="name">service.site.form</field>
+        <field name="model">service.site</field>
+        <field name="arch" type="xml">
+            <form string="Объект сети">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Магазин №..."/></h1>
+                    </div>
+                    <group>
+                        <field name="city"/>
+                        <field name="address"/>
+                        <field name="active"/>
+                    </group>
+                    <notebook>
+                        <page string="Заявки по объекту">
+                            <field name="order_ids" readonly="1">
+                                <list>
+                                    <field name="category_id"/>
+                                    <field name="state"/>
+                                    <field name="create_date"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_service_site" model="ir.actions.act_window">
+        <field name="name">Объекты сети</field>
+        <field name="res_model">service.site</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Добавьте первый объект сети (магазин)
+            </p>
+        </field>
+    </record>
+
+</odoo>

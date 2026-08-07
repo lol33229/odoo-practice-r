@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================== SEARCH (фильтры US1 "Получение заказов") ==================== -->
+    <record id="view_service_order_search" model="ir.ui.view">
+        <field name="name">service.order.search</field>
+        <field name="model">service.order</field>
+        <field name="arch" type="xml">
+            <search string="Поиск заказов">
+                <field name="address" string="Адрес"/>
+                <field name="site_id"/>
+                <field name="category_id"/>
+                <field name="description"/>
+
+                <filter string="Мои черновики" name="state_draft"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter string="Доступные (новые)" name="state_new"
+                        domain="[('state', '=', 'new')]"/>
+
+                <separator/>
+
+                <!-- Расстояние -->
+                <filter string="Рядом (до 5 км)" name="dist_near"
+                        domain="[('distance_km', '&lt;=', 5)]"/>
+                <filter string="Средне (5-15 км)" name="dist_mid"
+                        domain="[('distance_km', '&gt;', 5), ('distance_km', '&lt;=', 15)]"/>
+                <filter string="Далеко (&gt; 15 км)" name="dist_far"
+                        domain="[('distance_km', '&gt;', 15)]"/>
+
+                <separator/>
+
+                <!-- Стоимость -->
+                <filter string="До 2 000 ₽" name="price_low"
+                        domain="[('price_offered', '&lt;=', 2000)]"/>
+                <filter string="2 000 - 5 000 ₽" name="price_mid"
+                        domain="[('price_offered', '&gt;=', 2000), ('price_offered', '&lt;=', 5000)]"/>
+                <filter string="Более 5 000 ₽" name="price_high"
+                        domain="[('price_offered', '&gt;', 5000)]"/>
+
+                <group>
+                    <filter string="Вид работ" name="group_category"
+                            context="{'group_by': 'category_id'}"/>
+                    <filter string="Статус" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ==================== KANBAN (каталог заказов, основной экран) ==================== -->
+    <record id="view_service_order_kanban" model="ir.ui.view">
+        <field name="name">service.order.kanban</field>
+        <field name="model">service.order</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile" default_group_by="category_id">
+                <field name="address"/>
+                <field name="category_id"/>
+                <field name="description"/>
+                <field name="price_offered"/>
+                <field name="distance_km"/>
+                <field name="state"/>
+                <field name="response_count"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_global_click">
+                            <strong><field name="category_id"/></strong>
+                            <span class="badge float-end"
+                                  t-attf-class="badge-{{record.state.raw_value == 'new' and 'success' or (record.state.raw_value == 'in_progress' and 'warning' or (record.state.raw_value == 'draft' and 'secondary' or 'dark'))}}">
+                                <field name="state"/>
+                            </span>
+                            <div>📍 <field name="address"/></div>
+                            <div class="text-muted">
+                                <field name="description"/>
+                            </div>
+                            <div>💰 <field name="price_offered"/> ₽
+                                &#160;·&#160;
+                                📏 <field name="distance_km"/> км
+                            </div>
+                            <div class="text-muted">
+                                Откликов: <field name="response_count"/>
+                            </div>
+                            <button name="action_open_respond_wizard" type="object"
+                                    string="Откликнуться" class="btn btn-sm btn-primary mt-1"
+                                    invisible="state != 'new'"/>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ==================== LIST ==================== -->
+    <record id="view_service_order_list" model="ir.ui.view">
+        <field name="name">service.order.list</field>
+        <field name="model">service.order</field>
+        <field name="arch" type="xml">
+            <list string="Заказы">
+                <field name="site_id"/>
+                <field name="address"/>
+                <field name="category_id"/>
+                <field name="price_offered"/>
+                <field name="distance_km"/>
+                <field name="state"/>
+                <field name="response_count"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ==================== FORM ==================== -->
+    <record id="view_service_order_form" model="ir.ui.view">
+        <field name="name">service.order.form</field>
+        <field name="model">service.order</field>
+        <field name="arch" type="xml">
+            <form string="Заявка на услугу">
+                <header>
+                    <button name="action_publish" type="object"
+                            string="Опубликовать" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_open_respond_wizard" type="object"
+                            string="Откликнуться" class="btn-primary"
+                            invisible="state != 'new'"/>
+                    <button name="action_done" type="object" string="Завершить"
+                            invisible="state != 'in_progress'"/>
+                    <button name="action_cancel" type="object" string="Отменить"
+                            invisible="state in ('done', 'cancelled')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,new,in_progress,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="address" placeholder="Адрес объекта"/></h1>
+                    </div>
+                    <group>
+                        <group string="Основное">
+                            <field name="site_id"/>
+                            <field name="category_id"/>
+                            <field name="partner_id"/>
+                            <field name="assigned_provider_id" readonly="1"/>
+                        </group>
+                        <group string="Критерии поиска исполнителя">
+                            <field name="price_offered"/>
+                            <field name="distance_km"/>
+                        </group>
+                    </group>
+                    <field name="description" placeholder="Опишите проблему..."/>
+                    <group string="Фото и видео проблемы">
+                        <field name="attachment_ids" widget="many2many_binary"
+                               nolabel="1"/>
+                    </group>
+
+                    <notebook>
+                        <page string="Фотографии">
+                            <field name="photo_ids" mode="kanban">
+                                <kanban>
+                                    <templates>
+                                        <t t-name="card">
+                                            <field name="image" widget="image"/>
+                                        </t>
+                                    </templates>
+                                </kanban>
+                            </field>
+                        </page>
+                        <page string="Отклики">
+                            <field name="response_ids">
+                                <list editable="bottom" decoration-success="state == 'accepted'"
+                                      decoration-muted="state == 'rejected'">
+                                    <field name="provider_id"/>
+                                    <field name="proposed_price"/>
+                                    <field name="message"/>
+                                    <field name="state"/>
+                                    <button name="action_accept" type="object"
+                                            string="Принять" icon="fa-check"
+                                            invisible="state != 'sent'"/>
+                                    <button name="action_reject" type="object"
+                                            string="Отклонить" icon="fa-times"
+                                            invisible="state != 'sent'"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ==================== ACTION ==================== -->
+    <record id="action_service_order" model="ir.actions.act_window">
+        <field name="name">Заказы</field>
+        <field name="res_model">service.order</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_service_order_search"/>
+        <field name="context">{'search_default_state_new': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Пока нет ни одной заявки на услугу
+            </p>
+        </field>
+    </record>
+
+</odoo>

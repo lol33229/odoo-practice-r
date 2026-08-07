@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_service_plus_root"
+              name="Сервис+"
+              sequence="10"/>
+
+    <menuitem id="menu_service_order"
+              name="Заказы"
+              parent="menu_service_plus_root"
+              action="action_service_order"
+              sequence="5"/>
+
+    <menuitem id="menu_service_provider"
+              name="Каталог исполнителей"
+              parent="menu_service_plus_root"
+              action="action_service_provider"
+              sequence="10"/>
+
+    <menuitem id="menu_service_category"
+              name="Категории услуг"
+              parent="menu_service_plus_root"
+              action="action_service_category"
+              sequence="20"/>
+
+    <menuitem id="menu_service_site"
+              name="Объекты сети"
+              parent="menu_service_plus_root"
+              action="action_service_site"
+              sequence="25"/>
+
+    <menuitem id="menu_service_review"
+              name="Отзывы"
+              parent="menu_service_plus_root"
+              action="action_service_review"
+              sequence="30"/>
+
+</odoo>
