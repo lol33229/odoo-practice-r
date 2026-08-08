@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <record id="service_category_plumber" model="service.category">
+        <field name="name">Сантехник</field>
+        <field name="icon">fa-wrench</field>
+        <field name="sequence">10</field>
+    </record>
+
+    <record id="service_category_electrician" model="service.category">
+        <field name="name">Электрик</field>
+        <field name="icon">fa-bolt</field>
+        <field name="sequence">20</field>
+    </record>
+
+    <record id="service_category_welder" model="service.category">
+        <field name="name">Сварщик</field>
+        <field name="icon">fa-fire</field>
+        <field name="sequence">30</field>
+    </record>
+
+    <record id="service_category_snow_removal" model="service.category">
+        <field name="name">Уборка снега</field>
+        <field name="icon">fa-snowflake-o</field>
+        <field name="sequence">40</field>
+    </record>
+
+</odoo>

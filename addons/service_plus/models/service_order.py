@@ -4,6 +4,7 @@ from odoo.exceptions import UserError
 
 class ServiceOrder(models.Model):
     _name = 'service.order'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Заявка на услугу'
     _order = 'create_date desc'
     _rec_name = 'address'
@@ -35,18 +36,26 @@ class ServiceOrder(models.Model):
         'res.partner', string='Заказчик',
         default=lambda self: self.env.user.partner_id,
     )
+    # Детальные статусы выполнения работ (US2 "Контроль выполнения работ")
     state = fields.Selection(
         [
             ('draft', 'Черновик'),
             ('new', 'Новая'),
-            ('in_progress', 'В работе'),
+            ('assigned', 'Исполнитель назначен'),
+            ('en_route', 'Исполнитель в пути'),
+            ('in_progress', 'Работы выполняются'),
             ('done', 'Выполнена'),
             ('cancelled', 'Отменена'),
         ],
-        string='Статус', default='draft', required=True,
+        string='Статус', default='draft', required=True, tracking=True,
     )
     assigned_provider_id = fields.Many2one(
-        'service.provider', string='Назначенный исполнитель', readonly=True
+        'service.provider', string='Назначенный исполнитель', readonly=True,
+        tracking=True,
+    )
+    arrival_eta = fields.Datetime(
+        string='Ожидаемое время прибытия исполнителя', readonly=True,
+        tracking=True,
     )
 
     # --- Отклики мастеров ---
@@ -88,6 +97,7 @@ class ServiceOrder(models.Model):
                     + '\n- '.join(missing)
                 )
             order.state = 'new'
+            order.message_post(body='Заявка опубликована и доступна исполнителям.')
 
     def action_open_respond_wizard(self):
         """Кнопка «Откликнуться» — открывает мастер выбора исполнителя."""
@@ -101,10 +111,24 @@ class ServiceOrder(models.Model):
             'context': {'default_order_id': self.id},
         }
 
+    def action_start_travel(self):
+        """Исполнитель отметил, что выехал на объект."""
+        for order in self:
+            order.state = 'en_route'
+            order.message_post(body='Исполнитель выехал на объект.')
+
+    def action_start_work(self):
+        """Исполнитель отметил начало работ на месте."""
+        for order in self:
+            order.state = 'in_progress'
+            order.message_post(body='Исполнитель приступил к работам на объекте.')
+
     def action_cancel(self):
         for order in self:
             order.state = 'cancelled'
+            order.message_post(body='Заявка отменена.')
 
     def action_done(self):
         for order in self:
             order.state = 'done'
+            order.message_post(body='Работы по заявке завершены.')

@@ -12,6 +12,7 @@ class ServiceOrderResponseWizard(models.TransientModel):
     )
     message = fields.Text(string='Сообщение заказчику')
     proposed_price = fields.Float(string='Ваша цена, ₽')
+    eta = fields.Datetime(string='Когда сможете прибыть на объект')
 
     def action_submit(self):
         self.ensure_one()
@@ -20,5 +21,6 @@ class ServiceOrderResponseWizard(models.TransientModel):
             'provider_id': self.provider_id.id,
             'message': self.message,
             'proposed_price': self.proposed_price,
+            'eta': self.eta,
         })
         return {'type': 'ir.actions.act_window_close'}

@@ -9,6 +9,11 @@ class ServiceProvider(models.Model):
 
     # --- Основная информация ---
     name = fields.Char(string='Имя / название мастера', required=True)
+    partner_id = fields.Many2one(
+        'res.partner', string='Контакт (для чата и уведомлений)',
+        help="Партнёр Odoo, привязанный к мастеру — на него приходят "
+             "уведомления и через него можно писать в чат заявки",
+    )
     category_id = fields.Many2one(
         'service.category', string='Категория услуги', required=True
     )

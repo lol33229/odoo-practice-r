@@ -60,12 +60,13 @@
                 <field name="distance_km"/>
                 <field name="state"/>
                 <field name="response_count"/>
+                <field name="arrival_eta"/>
                 <templates>
                     <t t-name="card">
                         <div class="oe_kanban_global_click">
                             <strong><field name="category_id"/></strong>
                             <span class="badge float-end"
-                                  t-attf-class="badge-{{record.state.raw_value == 'new' and 'success' or (record.state.raw_value == 'in_progress' and 'warning' or (record.state.raw_value == 'draft' and 'secondary' or 'dark'))}}">
+                                  t-attf-class="badge-{{record.state.raw_value == 'new' and 'success' or (record.state.raw_value == 'draft' and 'secondary' or (record.state.raw_value in ['assigned', 'en_route', 'in_progress'] and 'warning' or (record.state.raw_value == 'done' and 'info' or 'dark')))}}">
                                 <field name="state"/>
                             </span>
                             <div>📍 <field name="address"/></div>
@@ -75,6 +76,9 @@
                             <div>💰 <field name="price_offered"/> ₽
                                 &#160;·&#160;
                                 📏 <field name="distance_km"/> км
+                            </div>
+                            <div class="text-muted" invisible="not arrival_eta">
+                                🕒 Прибытие: <field name="arrival_eta"/>
                             </div>
                             <div class="text-muted">
                                 Откликов: <field name="response_count"/>
@@ -101,6 +105,7 @@
                 <field name="price_offered"/>
                 <field name="distance_km"/>
                 <field name="state"/>
+                <field name="arrival_eta"/>
                 <field name="response_count"/>
             </list>
         </field>
@@ -119,12 +124,18 @@
                     <button name="action_open_respond_wizard" type="object"
                             string="Откликнуться" class="btn-primary"
                             invisible="state != 'new'"/>
+                    <button name="action_start_travel" type="object"
+                            string="Исполнитель выехал"
+                            invisible="state != 'assigned'"/>
+                    <button name="action_start_work" type="object"
+                            string="Работы начаты"
+                            invisible="state != 'en_route'"/>
                     <button name="action_done" type="object" string="Завершить"
-                            invisible="state != 'in_progress'"/>
+                            invisible="state not in ('assigned', 'en_route', 'in_progress')"/>
                     <button name="action_cancel" type="object" string="Отменить"
                             invisible="state in ('done', 'cancelled')"/>
                     <field name="state" widget="statusbar"
-                           statusbar_visible="draft,new,in_progress,done"/>
+                           statusbar_visible="draft,new,assigned,en_route,in_progress,done"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
@@ -136,6 +147,7 @@
                             <field name="category_id"/>
                             <field name="partner_id"/>
                             <field name="assigned_provider_id" readonly="1"/>
+                            <field name="arrival_eta" readonly="1"/>
                         </group>
                         <group string="Критерии поиска исполнителя">
                             <field name="price_offered"/>
@@ -166,6 +178,7 @@
                                       decoration-muted="state == 'rejected'">
                                     <field name="provider_id"/>
                                     <field name="proposed_price"/>
+                                    <field name="eta"/>
                                     <field name="message"/>
                                     <field name="state"/>
                                     <button name="action_accept" type="object"
@@ -179,6 +192,11 @@
                         </page>
                     </notebook>
                 </sheet>
+                <chatter>
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </chatter>
             </form>
         </field>
     </record>

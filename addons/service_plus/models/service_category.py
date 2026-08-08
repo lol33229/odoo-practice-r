@@ -20,6 +20,14 @@ class ServiceCategory(models.Model):
         string='Кол-во исполнителей', compute='_compute_provider_count'
     )
 
+    _sql_constraints = [
+        (
+            'name_uniq',
+            'unique(name)',
+            'Категория с таким названием уже существует! Выберите её из списка, не создавайте заново.',
+        ),
+    ]
+
     def _compute_provider_count(self):
         for category in self:
             category.provider_count = len(category.provider_ids)

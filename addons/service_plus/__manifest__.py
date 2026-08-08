@@ -16,6 +16,7 @@
     'data': [
         'security/ir.model.access.csv',
         'views/service_category_views.xml',
+        'data/service_category_data.xml',
         'views/service_site_views.xml',
         'views/service_provider_views.xml',
         'views/service_review_views.xml',

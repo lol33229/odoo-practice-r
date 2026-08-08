@@ -70,6 +70,7 @@
                 <field name="distance_km"/>
                 <field name="urgency"/>
                 <field name="photo"/>
+                <field name="phone"/>
                 <templates>
                     <t t-name="card">
                         <div class="oe_kanban_global_click d-flex">
@@ -87,6 +88,9 @@
                                 </div>
                                 <div>
                                     📍 <field name="distance_km"/> км
+                                </div>
+                                <div invisible="not phone">
+                                    📞 <field name="phone"/>
                                 </div>
                                 <span class="badge"
                                       t-attf-class="badge-{{record.urgency.raw_value == 'urgent' and 'danger' or (record.urgency.raw_value == 'standard' and 'warning' or 'secondary')}}">
@@ -116,6 +120,7 @@
                 <field name="district"/>
                 <field name="urgency"/>
                 <field name="phone"/>
+                <field name="partner_id" string="Контакт"/>
             </list>
         </field>
     </record>
@@ -135,6 +140,7 @@
                         <group string="Основное">
                             <field name="category_id"/>
                             <field name="phone"/>
+                            <field name="partner_id"/>
                             <field name="district"/>
                             <field name="active"/>
                         </group>

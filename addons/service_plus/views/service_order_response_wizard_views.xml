@@ -10,6 +10,7 @@
                     <field name="order_id" readonly="1"/>
                     <field name="provider_id"/>
                     <field name="proposed_price"/>
+                    <field name="eta"/>
                     <field name="message" placeholder="Например: могу приехать сегодня после 15:00"/>
                 </group>
                 <footer>
